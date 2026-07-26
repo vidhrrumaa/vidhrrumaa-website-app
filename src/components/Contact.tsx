@@ -10,11 +10,13 @@
  *   • Secondary     → #d4d4d4  (≥ 4.5:1 on #1A1A1A)
  *   • Captions      → #a8a8a8  (≥ 3:1 for large/bold labels)
  */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Phone, Mail, CheckCircle } from "lucide-react";
+import { Phone, Mail, CheckCircle, Upload } from "lucide-react";
 import { BRAND_DARK, BRAND_GOLD, BRAND_GOLD2, SITE_DATA, FONT } from "@/data/siteData";
 import { Reveal, SectionHeader } from "@/components/Shared";
+import { TurnstileWidget, type TurnstileHandle } from "@/components/Turnstile";
+import { sendContactMessage } from "@/lib/api";
 import profilePhoto from "@/images/Srinivas_Profile_Picture.png";
 
 type FormState = "idle" | "submitting" | "success";
@@ -22,7 +24,7 @@ type FormState = "idle" | "submitting" | "success";
 // ─── Dark-surface input style ─────────────────────────────────────────────────
 
 const darkInput: React.CSSProperties = {
-  width: "100%", padding: "0.6875rem 0.875rem",
+  width: "100%", padding: "0.5rem 0.875rem",
   border: "1px solid rgba(255,255,255,0.15)",
   borderRadius: "var(--input-radius)",
   backgroundColor: "rgba(255,255,255,0.07)",
@@ -65,18 +67,46 @@ const goldBar: React.CSSProperties = {
 export default function Contact() {
   const c = SITE_DATA.contact;
 
+  const fileRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileHandle>(null);
   const [formState, setFormState] = useState<FormState>("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (!turnstileToken) {
+      setError("Please complete the verification challenge.");
+      return;
+    }
     setFormState("submitting");
-    setTimeout(() => setFormState("success"), 1200);
+    try {
+      await sendContactMessage({
+        fullName: form.name,
+        email: form.email,
+        message: form.message,
+        attachment: fileRef.current?.files?.[0] ?? null,
+        turnstileToken,
+      });
+      setFormState("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setFormState("idle");
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
+    }
   };
 
   const reset = () => {
     setFormState("idle");
+    setError(null);
     setForm({ name: "", email: "", message: "" });
+    setFileName(null);
+    setTurnstileToken(null);
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   return (
@@ -183,18 +213,44 @@ export default function Contact() {
                 <div className="contact-form__field">
                   <DarkFieldLabel label="Message" />
                   <textarea
-                    rows={5} placeholder="Tell us about your project..."
+                    rows={3} placeholder="Tell us about your project..."
                     value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                     style={{ ...darkInput, resize: "vertical" }}
                     onFocus={(e) => { e.target.style.borderColor = BRAND_GOLD; e.target.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
                     onBlur={(e)  => { e.target.style.borderColor = "rgba(255,255,255,0.15)"; e.target.style.backgroundColor = "rgba(255,255,255,0.07)"; }}
                   />
                 </div>
+                <div className="contact-form__field">
+                  <DarkFieldLabel label="Attachment (optional)" />
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    className="contact-form__upload"
+                  >
+                    <Upload size={16} style={{ flexShrink: 0 }} />
+                    <span>{fileName ?? "Click to upload PDF, DOC, DOCX or image (max 5 MB)"}</span>
+                  </button>
+                  <input
+                    ref={fileRef} type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    style={{ display: "none" }}
+                    onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
+                  />
+                </div>
+                <div className="contact-form__field">
+                  <TurnstileWidget ref={turnstileRef} theme="dark" onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
+                </div>
+
+                {error && (
+                  <p className="contact-form__error" role="alert" style={{ color: "#f87171" }}>
+                    {error}
+                  </p>
+                )}
+
                 <button
                   type="submit"
-                  disabled={formState === "submitting"}
+                  disabled={formState === "submitting" || !turnstileToken}
                   className="contact__btn-primary"
-                  style={{ backgroundColor: BRAND_GOLD, color: BRAND_DARK }}
+                  style={{ backgroundColor: BRAND_GOLD, color: BRAND_DARK, opacity: formState === "submitting" || !turnstileToken ? 0.7 : 1 }}
                 >
                   {formState === "submitting" ? "Sending…" : "Send Message"}
                 </button>

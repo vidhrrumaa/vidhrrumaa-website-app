@@ -14,6 +14,8 @@ import { useRef, useState } from "react";
 import { Upload, CheckCircle } from "lucide-react";
 import { BRAND_DARK, BRAND_GOLD, BRAND_WARM, SITE_DATA, FONT } from "@/data/siteData";
 import { Reveal, SectionHeader } from "@/components/Shared";
+import { TurnstileWidget, type TurnstileHandle } from "@/components/Turnstile";
+import { sendCareerApplication } from "@/lib/api";
 
 // ─── Shared light-surface input style ────────────────────────────────────────
 
@@ -91,23 +93,61 @@ const emptyForm = (): CareerForm => ({
   role: "", experience: "", domain: [], software: [], summary: "",
 });
 
+// "5–10 years" / "15+ years" → 5 / 15. Takes the range's lower bound as the integer years value.
+const parseYearsOfExperience = (experience: string): number => {
+  const match = experience.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+};
+
 export default function Careers() {
   const fileRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileHandle>(null);
   const [status,   setStatus]   = useState<"idle" | "sending" | "sent">("idle");
   const [fileName, setFileName] = useState<string | null>(null);
   const [form, setForm] = useState<CareerForm>(emptyForm());
+  const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const set = (field: keyof CareerForm) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (!turnstileToken) {
+      setError("Please complete the verification challenge.");
+      return;
+    }
     setStatus("sending");
-    setTimeout(() => setStatus("sent"), 1400);
+    try {
+      await sendCareerApplication({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        contactNumber: form.phone,
+        areaOfInterest: form.role,
+        yearsOfExperience: parseYearsOfExperience(form.experience),
+        domains: form.domain,
+        softwareExpertise: form.software,
+        coverLetter: form.summary,
+        resume: fileRef.current?.files?.[0] ?? null,
+        turnstileToken,
+      });
+      setStatus("sent");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setStatus("idle");
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
+    }
   };
 
-  const reset = () => { setStatus("idle"); setFileName(null); setForm(emptyForm()); if (fileRef.current) fileRef.current.value = ""; };
+  const reset = () => {
+    setStatus("idle"); setError(null); setFileName(null); setForm(emptyForm());
+    setTurnstileToken(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
 
   const careers = SITE_DATA.careers;
 
@@ -211,12 +251,23 @@ export default function Careers() {
                 <input ref={fileRef} type="file" accept=".pdf,.doc,.docx" required style={{ display: "none" }} onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)} />
               </div>
 
+              {/* Bot check */}
+              <div className="careers-form__field">
+                <TurnstileWidget ref={turnstileRef} theme="light" onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
+              </div>
+
+              {error && (
+                <p className="careers-form__error" role="alert" style={{ color: "#dc2626" }}>
+                  {error}
+                </p>
+              )}
+
               <div className="careers-form__submit-row">
                 <button
                   type="submit"
-                  disabled={status === "sending"}
+                  disabled={status === "sending" || !turnstileToken}
                   className="careers__btn careers__btn--primary"
-                  style={{ backgroundColor: BRAND_DARK, opacity: status === "sending" ? 0.7 : 1 }}
+                  style={{ backgroundColor: BRAND_DARK, opacity: status === "sending" || !turnstileToken ? 0.7 : 1 }}
                 >
                   {status === "sending" ? "Submitting…" : "Submit Application"}
                 </button>

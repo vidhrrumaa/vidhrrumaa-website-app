@@ -89,7 +89,7 @@ export const SITE_DATA = {
   contact: {
     person: "Srinivaskumar Twarakavi",
     phone:  "91-93464-15412",
-    email:  "info@viddhrumaa.com",
+    email:  "info@vidhrrumaa.com",
   },
 
   stats: [
