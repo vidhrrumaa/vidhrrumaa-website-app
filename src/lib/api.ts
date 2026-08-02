@@ -6,19 +6,19 @@
  */
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api/v1';
 
-async function getCsrfToken(): Promise<string> {
-  const res = await fetch(`${API_BASE}/csrf-token`, { credentials: 'include' });
-  if (!res.ok) throw new Error('Could not initialize secure session');
-  const { csrfToken } = await res.json();
-  return csrfToken;
-}
+// TEMP: unused while CSRF is skipped for CORS testing — restore call site in postForm() before shipping
+// async function getCsrfToken(): Promise<string> {
+//   const res = await fetch(`${API_BASE}/csrf-token`, { credentials: 'include' });
+//   if (!res.ok) throw new Error('Could not initialize secure session');
+//   const { csrfToken } = await res.json();
+//   return csrfToken;
+// }
 
 async function postForm(path: string, formData: FormData) {
-  const csrfToken = await getCsrfToken();
+  // TEMP: CSRF skipped for CORS testing — restore getCsrfToken() + header before shipping
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
-    credentials: 'include',
-    headers: { 'x-csrf-token': csrfToken }, // do NOT set Content-Type - browser sets the multipart boundary
+    //credentials: 'include',
     body: formData,
   });
 
