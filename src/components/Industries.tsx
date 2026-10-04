@@ -4,7 +4,7 @@
  * Five-column icon card grid covering Vidhrrumaa's target verticals.
  */
 import { motion } from "motion/react";
-import { BRAND_DARK, BRAND_GOLD, INDUSTRY_ICONS, SITE_DATA, FONT } from "@/data/siteData";
+import { BRAND_DARK, BRAND_GOLD, INDUSTRY_ICONS, SITE_DATA } from "@/data/siteData";
 import { Reveal, SectionHeader, stagger, fadeUp } from "@/components/Shared";
 
 export default function Industries() {
@@ -33,8 +33,8 @@ export default function Industries() {
                 <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "50%", backgroundColor: "#F5E9C6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 0.75rem" }}>
                   {Icon ? <Icon size={18} strokeWidth={1.5} color={BRAND_DARK} /> : null}
                 </div>
-                <h3 style={{ fontSize: FONT.base, fontWeight: 700, color: BRAND_DARK, margin: "0 0 0.25rem", lineHeight: 1.3 }}>{item.name}</h3>
-                <p  style={{ fontSize: FONT.sm, color: "#78716c", margin: 0, lineHeight: 1.4 }}>{item.subtitle}</p>
+                <h3 className="card-title">{item.name}</h3>
+                <p className="card-subtitle">{item.subtitle}</p>
               </motion.div>
             );
           })}

@@ -188,8 +188,8 @@ button {
 .section-header__tagline {
   font-size: var(--font-size-base);
   font-style: italic;
-  font-weight: 300;
-  color: var(--muted-foreground);
+  font-weight: 500;
+  color: #4a4a4a; /* darker than --muted-foreground for readability */
   max-width: 65rem; /* wide enough to show long taglines in one row on desktop */
   line-height: 1.65;
 }
@@ -212,16 +212,422 @@ button {
   border-radius: 50%;
   flex-shrink: 0;
 }
+/* Name = primary (bigger, bolder, near-black); label = secondary (smaller,
+   lighter weight, warm grey) — still ≥ 7:1 contrast on white for all devices. */
 .service-item__name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #292524;
+  font-size: 1.0625rem; /* 17px */
+  font-weight: 700;
+  color: #1a1a1a;
   line-height: 1.4;
 }
 .service-item__label {
-  font-size: 0.875rem;
-  color: #78716c;
-  margin-top: 0.125rem;
+  font-size: 0.9375rem; /* 15px — stays legible on small phones */
+  font-weight: 500;
+  color: #57534e;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  margin-top: 0.2rem;
+}
+
+/* Name + optional badge; wraps the badge under the name on narrow screens */
+.service-item__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.625rem;
+}
+
+/* ── 4a. Featured Service Item + Partner Badge ──────────────────────────────
+   Used for credentials such as "Siemens Channel Partner". The row is a
+   disclosure button that expands an inline description panel.
+
+   Border light: a gold light travels around the border continuously,
+   driven by an animated @property angle feeding a conic-gradient painted in
+   the border-box. The gold left accent is a background layer clipped to the
+   padding-box, so it follows the card's inner corner curve exactly.
+
+   Styles (set `effect` on the item in siteData.ts → data-effect):
+     comet    one light band orbiting
+     twin     two bands on opposite sides
+     radiant  the whole border is a slowly turning gold sheen
+     siemens  gold-and-teal band (teal nods to the Siemens brand colour)
+     aura     comet + a soft glow that travels with it outside the card
+   Browsers without @property show a static border. Users who ask their OS
+   for reduced motion get a static border (accessibility). */
+@property --flow-angle {
+  syntax: "<angle>";
+  inherits: true; /* the aura glow (::after) reads the parent's angle */
+  initial-value: 0deg;
+}
+
+.service-item--featured {
+  --edge: rgba(196, 164, 50, 0.35);
+  --featured-strip: linear-gradient(180deg, #c4a432, #a88b28);
+  --featured-fill: linear-gradient(100deg, #fdf8ea 0%, #fffdf7 60%, #ffffff 100%);
+  position: relative;
+  isolation: isolate;
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  background-origin: padding-box, padding-box, border-box;
+  background-clip: padding-box, padding-box, border-box;
+  background-repeat: no-repeat;
+  background-position: left top, 0 0, 0 0;
+  background-size: 4px 100%, 100% 100%, 100% 100%;
+  /* default = comet */
+  background-image:
+    var(--featured-strip),
+    var(--featured-fill),
+    conic-gradient(from var(--flow-angle),
+      var(--edge) 0deg, var(--edge) 280deg,
+      #e9cf6a 318deg, #fff6cf 334deg, #e9cf6a 348deg,
+      var(--edge) 360deg);
+  box-shadow: 0 2px 12px rgba(168, 139, 40, 0.1);
+  transition: box-shadow 0.25s ease;
+  animation: featured-border-flow 6s linear infinite;
+}
+.service-item--featured:last-child {
+  border-bottom: 2px solid transparent;
+}
+
+.service-item--featured[data-effect="twin"] {
+  background-image:
+    var(--featured-strip),
+    var(--featured-fill),
+    conic-gradient(from var(--flow-angle),
+      var(--edge) 0deg, var(--edge) 120deg,
+      #e9cf6a 150deg, #fff6cf 165deg, #e9cf6a 178deg,
+      var(--edge) 180deg, var(--edge) 300deg,
+      #e9cf6a 330deg, #fff6cf 345deg, #e9cf6a 358deg,
+      var(--edge) 360deg);
+  animation-duration: 8s;
+}
+.service-item--featured[data-effect="radiant"] {
+  background-image:
+    var(--featured-strip),
+    var(--featured-fill),
+    conic-gradient(from var(--flow-angle),
+      #a88b28, #e9cf6a, #fff3c4, #c4a432, #8a6d1a, #d9b84a, #fff3c4, #a88b28);
+  animation-duration: 5s;
+}
+.service-item--featured[data-effect="siemens"] {
+  background-image:
+    var(--featured-strip),
+    var(--featured-fill),
+    conic-gradient(from var(--flow-angle),
+      var(--edge) 0deg, var(--edge) 250deg,
+      #009999 290deg, #5fd3c9 312deg, #fff6cf 332deg, #e9cf6a 348deg,
+      var(--edge) 360deg);
+}
+/* aura: comet border + a blurred copy of the light outside the card */
+.service-item--featured[data-effect="aura"]::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from var(--flow-angle),
+    transparent 0deg, transparent 280deg,
+    rgba(233, 207, 106, 0.9) 320deg, rgba(255, 246, 207, 0.95) 334deg,
+    rgba(233, 207, 106, 0.9) 348deg, transparent 360deg);
+  filter: blur(10px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.service-item--featured:hover,
+.service-item--featured:focus-within,
+.service-item--featured.is-open {
+  box-shadow: 0 6px 22px rgba(168, 139, 40, 0.18);
+}
+
+@keyframes featured-border-flow {
+  to { --flow-angle: 360deg; }
+}
+
+/* Header button: the whole row is the click target */
+.featured-item__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 1.25rem;
+  background: none;
+  border: none;
+  border-radius: 0.625rem; /* card radius minus its 2px border */
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.featured-item__toggle:focus-visible {
+  outline: 2px solid var(--ring, #c4a432);
+  outline-offset: 2px;
+}
+.featured-item__text {
+  flex: 1;
+  min-width: 0;
+}
+.featured-item__text .service-item__label {
+  display: block;
+}
+.featured-item__chevron {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.05rem;
+  border-radius: 50%;
+  border: 1px solid rgba(196, 164, 50, 0.45);
+  background: #ffffff;
+  color: #a88b28;
+  transition: transform 0.25s ease, background-color 0.2s ease;
+}
+.featured-item__toggle:hover .featured-item__chevron {
+  background: #fdf3d3;
+}
+.is-open .featured-item__chevron {
+  transform: rotate(180deg);
+}
+
+/* Expanded description panel */
+.featured-item__panel {
+  overflow: hidden;
+}
+.featured-item__panel-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0 1rem 1rem 1.25rem;
+  padding: 0.875rem 1rem;
+  border-top: 1px solid rgba(196, 164, 50, 0.3);
+  background: #ffffff;
+  border-radius: 0.5rem;
+}
+.featured-item__details {
+  flex: 1;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: #44403c;
+}
+.featured-item__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid #e7e5e4;
+  background: #ffffff;
+  color: #57534e;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.featured-item__close:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+.featured-item__close:focus-visible {
+  outline: 2px solid var(--ring, #c4a432);
+  outline-offset: 2px;
+}
+
+/* Partner badge — base pill (black, gold text). Used as-is when the moving
+   light runs on the whole card (data-target="card"). */
+.partner-badge {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border: 1px solid #c4a432;
+  color: #e3c55a; /* gold on near-black, ~9:1 contrast */
+  font-size: 0.75rem; /* 12px — badge text, uppercase + bold */
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 236, 170, 0.18);
+}
+.partner-badge svg {
+  flex-shrink: 0;
+}
+
+/* ── Badge designs (data-target="badge") ───────────────────────────────────
+   The card keeps a still gold border; the badge carries the motion. Pick a
+   design with `badgeStyle` in siteData. Rule: text colour and moving colour
+   are always different, so the motion never washes out the words.
+     gold      solid gold-bar pill, dark text, a glint sweeps across
+     ivory     light pill, dark text, gold light circles the border
+     platinum  black pill, gold text, silver-white light circles the border
+     teal      black pill, gold text, Siemens-teal light circles the border
+     foil      black pill, the gold lettering itself shimmers like foil */
+.service-item--featured[data-target="badge"] {
+  animation: none;
+  background-image:
+    var(--featured-strip),
+    var(--featured-fill),
+    linear-gradient(rgba(196, 164, 50, 0.45), rgba(196, 164, 50, 0.45));
+}
+.service-item--featured[data-target="badge"]::after {
+  content: none;
+}
+
+/* Shared: a light circling the pill border (ivory, platinum, teal) */
+.service-item--featured[data-badge="ivory"] .partner-badge,
+.service-item--featured[data-badge="platinum"] .partner-badge,
+.service-item--featured[data-badge="teal"] .partner-badge {
+  border: 1.5px solid transparent;
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  animation: featured-border-flow 3s linear infinite;
+}
+
+/* gold — solid gold bar, dark text, periodic glint */
+.service-item--featured[data-badge="gold"] .partner-badge {
+  background: linear-gradient(135deg, #b8962a 0%, #e9cf6a 48%, #c9a93a 100%);
+  border-color: #a88b28;
+  color: #1a1a1a; /* ~9:1 on the gold */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 225, 0.6),
+    0 1px 3px rgba(120, 95, 20, 0.35);
+}
+.service-item--featured[data-badge="gold"] .partner-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  z-index: 1;
+  background: linear-gradient(105deg,
+    transparent 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%);
+  transform: translateX(-150%) skewX(-20deg);
+  animation: badge-glint 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ivory — light pill, dark text, gold light on the border */
+.service-item--featured[data-badge="ivory"] .partner-badge {
+  color: #1a1a1a;
+  background-image:
+    linear-gradient(135deg, #fffdf6, #fbf3dc),
+    conic-gradient(from var(--flow-angle),
+      #d8c27a 0deg, #d8c27a 250deg,
+      #c4a432 295deg, #8a6d1a 320deg, #c4a432 345deg, #d8c27a 360deg);
+  box-shadow: 0 1px 3px rgba(120, 95, 20, 0.2);
+}
+.service-item--featured[data-badge="ivory"] .partner-badge svg {
+  color: #a88b28;
+}
+
+/* platinum — black pill, gold text, silver-white light */
+.service-item--featured[data-badge="platinum"] .partner-badge {
+  background-image:
+    linear-gradient(135deg, #2a2a2a, #1a1a1a),
+    conic-gradient(from var(--flow-angle),
+      #5a5a5a 0deg, #5a5a5a 250deg,
+      #c9c9c9 295deg, #ffffff 320deg, #c9c9c9 345deg, #5a5a5a 360deg);
+}
+
+/* teal — black pill, gold text, Siemens-teal light */
+.service-item--featured[data-badge="teal"] .partner-badge {
+  background-image:
+    linear-gradient(135deg, #2a2a2a, #1a1a1a),
+    conic-gradient(from var(--flow-angle),
+      #1f4a4a 0deg, #1f4a4a 240deg,
+      #009999 290deg, #5fd3c9 318deg, #009999 345deg, #1f4a4a 360deg);
+}
+
+/* foil — the gold lettering itself shimmers (still border) */
+.service-item--featured[data-badge="foil"] .partner-badge {
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+  border-color: #c4a432;
+}
+.service-item--featured[data-badge="foil"] .partner-badge__text {
+  background: linear-gradient(100deg,
+    #b8962a 0%, #e3c55a 35%, #fff6cf 50%, #e3c55a 65%, #b8962a 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: badge-foil 3.5s linear infinite;
+}
+.service-item--featured[data-badge="foil"] .partner-badge svg {
+  color: #e3c55a;
+}
+
+@keyframes badge-glint {
+  0%   { transform: translateX(-150%) skewX(-20deg); }
+  55%  { transform: translateX(300%) skewX(-20deg); }
+  100% { transform: translateX(300%) skewX(-20deg); }
+}
+@keyframes badge-foil {
+  from { background-position: 100% 0; }
+  to   { background-position: -150% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-item--featured,
+  .service-item--featured .partner-badge,
+  .service-item--featured .partner-badge::after,
+  .service-item--featured .partner-badge__text {
+    animation: none !important;
+  }
+}
+
+/* Visually hidden but read by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── 4b. Card Title + Subtitle ──────────────────────────────────────────────
+   Shared by Industries, Innovation and About cards so every card reads alike.
+   Hierarchy uses three signals at once (size, weight, colour), each one step:
+     title    16px / 700 / #1a1a1a   (primary)
+     subtitle 14px / 500 / #44403c   (secondary)
+   Subtitle contrast is ~10:1 on white (WCAG AA needs 4.5:1, AAA 7:1), and
+   14px is the accepted minimum for secondary text on mobile. */
+.card-title {
+  font-size: 1rem; /* 16px */
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+  margin: 0 0 0.25rem;
+}
+.card-subtitle {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #44403c;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+/* Variants for cards on dark backgrounds (Innovation, active About card) */
+.card-title--on-dark {
+  color: #ffffff;
+}
+.card-subtitle--on-dark {
+  color: #d6d3d1; /* ~11:1 contrast on #1A1A1A */
 }
 
 /* ── 5. Navbar ──────────────────────────────────────────────────────────────── */
@@ -606,14 +1012,42 @@ button {
   min-height: 6rem;
   overflow: hidden;
 }
-.client-card__logo-placeholder {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: #f5e9c6;
-  display: flex;
+/* Wordmark: simple text logo for clients without a logo image — modelled on
+   the existing image logos (dark monogram tile + bold serif caps, one line). */
+.client-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: 100%;
+  transition: transform 0.3s ease;
+}
+.client-wordmark__mark {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 1.75rem;
+  height: 1.5rem;
+  padding: 0 0.2rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.8125rem;
+  font-style: italic;
+  font-weight: 700;
+  border-radius: 2px;
+}
+.client-wordmark__name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+.client-card:hover .client-wordmark,
+.client-card:focus-within .client-wordmark {
+  transform: scale(1.05);
 }
 .client-card__logo-img {
   max-height: 3.5rem;
@@ -678,14 +1112,52 @@ button {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
 }
 
-.about__card-name {
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 0.25rem;
+
+/* About descriptions — one rule for every description in About Vidhrrumaa.
+   Fills the full width of its container (no max-width cap) and is justified,
+   so every line runs edge to edge. Hyphenation (needs <html lang="en">)
+   splits long words so justified lines don't open wide gaps between words;
+   the last line of each paragraph stays left-aligned, as in print. */
+.about__text {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  font-size: var(--font-size-base); /* 16px */
+  font-weight: 400;
+  line-height: 1.75;
+  color: #44403c; /* ~10:1 on white */
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-wrap: break-word;
 }
-.about__card-subtitle {
-  font-size: var(--font-size-sm);
+/* Same rule, one step smaller where it sits under a card title */
+.about__text--sm {
+  font-size: var(--font-size-sm); /* 14px */
+  line-height: 1.6;
+}
+/* Stacked paragraphs (e.g. the leadership bio) */
+.about__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.about__point .about__text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Leadership photo: full landscape frame (logo sits on the wall at right) */
+.about__profile-photo {
+  width: min(100%, 28rem);
+  aspect-ratio: 2496 / 1724; /* source image ratio — no cropping */
+  height: auto;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 2px solid var(--color-gold, #c4a432);
+  box-shadow: 0 10px 30px rgba(26, 26, 26, 0.14);
+  flex-shrink: 0;
 }
 
 /* ── 10. Contact Section ────────────────────────────────────────────────────── */
@@ -1159,15 +1631,31 @@ button {
 }
 
 /* Image container: fixed height, contain (never clip), zoom on hover */
+/* One fixed frame size for every award thumbnail so all cards match.
+   Default: whole image visible (contain) on a blurred copy of itself
+   (::before, --award-backdrop set in Awards.tsx) instead of grey bars. */
 .award-card__img-wrap {
+  position: relative;
+  isolation: isolate;
   background: #f8f7f5;
-  height: 16rem;
+  height: 20rem;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.75rem;
   overflow: hidden;
   flex-shrink: 0;
+}
+.award-card__img-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: -1;
+  background-image: var(--award-backdrop, none);
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) saturate(0.9);
+  opacity: 0.45;
 }
 .award-card__img-wrap img {
   width: 100%;
@@ -1176,7 +1664,21 @@ button {
   display: block;
   transition: transform 0.4s ease;
 }
+/* Taller magazine pages: span the full frame width, top-anchored (headline
+   stays visible). Native resolution — scaled proportionally, never stretched. */
+.award-card__img-wrap--fill-width {
+  padding: 0;
+}
+.award-card__img-wrap--fill-width img {
+  object-fit: cover;
+  object-position: top center;
+}
 /* zoom handled inline in Awards.tsx */
+@media (max-width: 640px) {
+  .award-card__img-wrap {
+    height: 16rem;
+  }
+}
 
 .award-card__body {
   padding: 1rem 1.25rem 1.25rem;

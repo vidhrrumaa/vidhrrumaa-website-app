@@ -19,8 +19,8 @@ type AboutKey = "story" | "vision" | "leadership" | "partnerships" | "careers";
 
 function StoryPanel() {
   return (
-    <p style={{ fontSize: FONT.base, color: "#44403c", lineHeight: 1.75, maxWidth: "45rem", margin: 0 }}>
-      Business Innovations Private Limited is a high-impact engineering and technology company delivering advanced,
+    <p className="about__text">
+      VIDHRRUMAA BUSSINESS INNOWATTIIONS PRIVATE LIMITED is a high-impact engineering and technology company delivering advanced,
       end-to-end solutions across product development and digital transformation. Built on a strong foundation in
       mechanical R&D, we specialize in CAD/CAM/CAE engineering, intelligent software development, and AI-driven
       innovation tailored for global industries.
@@ -48,7 +48,7 @@ function VisionPanel() {
             <div style={{ width: "0.875rem", height: 2, backgroundColor: accent, borderRadius: 2 }} />
             <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.6875rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: accent }}>{label}</span>
           </div>
-          <p style={{ fontSize: FONT.base, color: "#44403c", lineHeight: 1.7, margin: 0 }}>{text}</p>
+          <p className="about__text">{text}</p>
         </div>
       ))}
     </div>
@@ -61,19 +61,20 @@ function LeadershipPanel() {
   return (
     <div>
       <div style={{ display: "flex", gap: "1.75rem", flexWrap: "wrap", marginBottom: "1.5rem", alignItems: "flex-start" }}>
+        {/* Shown uncropped (landscape) so the Vidhrrumaa logo on the wall behind stays visible */}
         <img
-          src={profilePhoto} alt={SITE_DATA.contact.person}
-          style={{ width: "10rem", height: "10rem", objectFit: "cover", objectPosition: "top", borderRadius: "0.625rem", border: `2px solid ${BRAND_GOLD}`, flexShrink: 0 }}
+          src={profilePhoto} alt={`${SITE_DATA.contact.person} at the Vidhrrumaa office`}
+          className="about__profile-photo"
         />
         <div style={{ flex: 1, minWidth: "12rem" }}>
           <div style={{ fontSize: "0.6875rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: BRAND_GOLD, marginBottom: "0.375rem" }}>SIEMENS Certified PLM / Digital Transformation Executive</div>
           <h4 style={{ fontSize: "1.125rem", fontWeight: 700, color: BRAND_DARK, margin: "0 0 0.25rem" }}>{SITE_DATA.contact.person}</h4>
           <p  style={{ fontSize: FONT.base, color: BRAND_GOLD, margin: "0 0 0.75rem", fontWeight: 600 }}>Founder, Vidhrrumaa</p>
-          {SITE_DATA.about.leaderBio.split("\n").map((para, i, arr) => (
-                <p key={i} style={{ fontSize: FONT.base, color: "#57534e", lineHeight: 1.7, margin: i < arr.length - 1 ? "0 0 0.75rem" : 0 }}>
-                  {para}
-                </p>
-              ))}
+          <div className="about__text-group">
+            {SITE_DATA.about.leaderBio.split("\n").filter((para) => para.trim()).map((para, i) => (
+              <p key={i} className="about__text">{para}</p>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -81,16 +82,16 @@ function LeadershipPanel() {
         {STRENGTHS.map((s) => (
           <div key={s.title} style={{ display: "flex", gap: "0.625rem", backgroundColor: "#fff", border: "1px solid #e7e5e4", borderRadius: "0.5rem", padding: "0.75rem 0.875rem" }}>
             <div style={{ marginTop: "0.3125rem", width: "0.375rem", height: "0.375rem", borderRadius: "50%", backgroundColor: BRAND_GOLD, flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: FONT.base, fontWeight: 700, color: BRAND_DARK }}>{s.title}</div>
-              <div style={{ fontSize: FONT.sm, color: "#78716c", marginTop: "0.125rem", lineHeight: 1.5 }}>{s.desc}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="card-title">{s.title}</div>
+              <p className="about__text about__text--sm" style={{ marginTop: "0.25rem" }}>{s.desc}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div style={{ borderLeft: `3px solid ${BRAND_GOLD}`, backgroundColor: "#fafaf9", padding: "0.625rem 0.875rem", borderRadius: "0 0.375rem 0.375rem 0" }}>
-        <p style={{ fontSize: FONT.base, color: "#57534e", margin: 0, lineHeight: 1.6 }}>
+        <p className="about__text">
           <strong>Ethical Leadership:</strong> Builds agile teams with a focus on transparency, trust, and continuous improvement.
         </p>
       </div>
@@ -105,11 +106,11 @@ function PartnershipsPanel() {
     "Engage with government and R&D programs for innovation grants and projects.",
   ];
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem", maxWidth: "42rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
       {points.map((text) => (
-        <div key={text} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+        <div key={text} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }} className="about__point">
           <div style={{ marginTop: "0.375rem", width: "0.375rem", height: "0.375rem", borderRadius: "50%", backgroundColor: BRAND_GOLD, flexShrink: 0 }} />
-          <p style={{ fontSize: FONT.base, color: "#44403c", lineHeight: 1.7, margin: 0 }}>{text}</p>
+          <p className="about__text">{text}</p>
         </div>
       ))}
     </div>
@@ -163,8 +164,8 @@ export default function About() {
                 onMouseLeave={(e) => { if (!isActive) { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = "#e7e5e4"; el.style.boxShadow = "none"; }}}
               >
                 <div style={{ width: "1.5rem", height: 2, backgroundColor: BRAND_GOLD, borderRadius: 2, marginBottom: "0.75rem" }} />
-                <div className="about__card-name" style={{ color: isActive ? "#fff" : "#1c1917" }}>{item.name}</div>
-                <div className="about__card-subtitle" style={{ color: isActive ? "rgba(255,255,255,0.5)" : "#a8a29e" }}>{item.subtitle}</div>
+                <div className={`card-title${isActive ? " card-title--on-dark" : ""}`}>{item.name}</div>
+                <div className={`card-subtitle${isActive ? " card-subtitle--on-dark" : ""}`}>{item.subtitle}</div>
 
                 {item.key !== "careers" ? (
                   <div style={{ marginTop: "0.625rem" }}>

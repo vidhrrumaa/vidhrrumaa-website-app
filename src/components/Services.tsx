@@ -38,7 +38,12 @@ function ServiceBlock({ service, tinted, reverse }: { service: Service; tinted: 
             <SectionHeader title={service.title} tagline={service.tagline} />
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.2 }} variants={stagger}>
               {service.items.map((item) => (
-                <ServiceItem key={item.name} name={item.name} subtitle={item.subtitle} />
+                <ServiceItem key={item.name} name={item.name} subtitle={item.subtitle} badge={"badge" in item ? item.badge : undefined}
+                  details={"details" in item ? item.details : undefined}
+                  effect={"effect" in item ? item.effect : undefined}
+                  effectTarget={"effectTarget" in item ? item.effectTarget : undefined}
+                  badgeStyle={"badgeStyle" in item ? item.badgeStyle : undefined}
+                />
               ))}
             </motion.div>
           </div>

@@ -12,6 +12,9 @@ import recognition1Img from "@/images/recognition-1.png";
 import recognition2Img from "@/images/recognition-2.png";
 import recognition3Img from "@/images/recognition-3.png";
 import recognition4Img from "@/images/recognition-4.png";
+import recognition5Img from "@/images/recognition-5.png";
+import recognition6Img from "@/images/recognition-6.png";
+import recognition7Img from "@/images/recognition-7.png";
 import siemensCalendar1 from "@/images/calendar-1.png";
 import siemensCalendar2 from "@/images/calendar-2.png";
 import siemensCalendar3 from "@/images/calendar-3.png";
@@ -93,7 +96,7 @@ export const SITE_DATA = {
   },
 
   stats: [
-    { value: "20+", label: "Years Expertise" },
+    { value: "25+", label: "Years Expertise" },
     { value: "5",   label: "Global Industries" },
     { value: "6",   label: "Service Domains" },
   ],
@@ -121,7 +124,15 @@ export const SITE_DATA = {
       imageId:  "1518770660439-4636190af475",
       imageAlt: "Digital engineering and Industry 4.0 technology",
       items: [
-        { name: "Siemens NX Solutions",        subtitle: "Master-Level Implementation" },
+        { name: "Siemens NX Solutions",        subtitle: "Master-Level Implementation", badge: "Siemens Channel Partner",
+          // Shown when the item is expanded. Leave "" to show the "coming soon" note.
+          details: "",
+          // Border-light style: "comet" | "twin" | "radiant" | "siemens" | "aura"
+          effect: "aura",
+          // Where the moving light runs: "badge" (pill only) | "card" (whole row border)
+          effectTarget: "badge",
+          // Badge design when effectTarget is "badge": "gold" | "ivory" | "platinum" | "teal" | "foil"
+          badgeStyle: "gold" },
         { name: "Teamcenter PLM",              subtitle: "Lifecycle Excellence" },
         { name: "Digital Twin",                subtitle: "Predictive Modeling" },
         { name: "Industry 4.0",                subtitle: "The Future of Manufacturing" },
@@ -186,11 +197,11 @@ export const SITE_DATA = {
   about: {
     title:   "About Vidhrrumaa",
     tagline: "Built on over two decades of deep industry expertise, driven by innovation, and fiercely focused on customer success.",
-    story: "Business Innovations Private Limited is a high-impact engineering and technology company delivering advanced, end-to-end solutions across product development and digital transformation. Built on a strong foundation in mechanical R&D, we specialize in CAD/CAM/CAE engineering, intelligent software development, and AI-driven innovation tailored for global industries.",
+    story: "VIDHRRUMAA BUSSINESS INNOWATTIIONS PRIVATE LIMITED is a high-impact engineering and technology company delivering advanced, end-to-end solutions across product development and digital transformation. Built on a strong foundation in mechanical R&D, we specialize in CAD/CAM/CAE engineering, intelligent software development, and AI-driven innovation tailored for global industries.",
     mission: "To deliver High-End, Value-added innovative engineering and software solutions that empower businesses, drive technological growth, and create value through excellence, integrity, and expertise.",
     vision:  "To be a global leader in Specialized Engineering and software services, known for innovation, quality, and transformative solutions that shape a smarter and more connected future.",
     leaderTitle: "SIEMENS Certified PLM / Digital Transformation Executive",
-    leaderBio:   `Mr. Srinivas Kumar, A SIEMENS Certified Professional and visionary Digital Transformation Executive bringing over 25 years of leadership in architecting enterprise CAD/CAM/CAE/PLM ecosystems. He is currently serving as the Founder & CEO of Vidhrrumaa Business Innovations Private Limited, and has driven engineering excellence being the Founder of Sree Varahhas Technologies (Formerly known as G4 Solutions & Applications). He specializes in bridging the gap between advanced SIEMENS technologies and scalable business value. Leveraging an extensive background in technical consulting with industry pioneers such as SIEMENS PLM, TCS, and Satyam, he has defined his career by transforming complex engineering capabilities into streamlined, high-performance operational realities.
+    leaderBio:   `Mr. Srinivas Kumar, A SIEMENS Certified Professional and visionary Digital Transformation Executive bringing over 25 years of leadership in architecting enterprise CAD/CAM/CAE/PLM ecosystems. He is currently serving as the Founder & CEO of VIDHRRUMAA BUSSINESS INNOWATTIIONS PRIVATE LIMITED, and has driven engineering excellence being the Founder of Sree Varahhas Technologies (Formerly known as G4 Solutions & Applications). He specializes in bridging the gap between advanced SIEMENS technologies and scalable business value. Leveraging an extensive background in technical consulting with industry pioneers such as SIEMENS PLM, TCS, and Satyam, he has defined his career by transforming complex engineering capabilities into streamlined, high-performance operational realities.
 
 Resourceful in all areas of Engineering Services marketing, with the ability to understand customer pain areas and suggest appropriate solutions and services, on a consistent basis to ensure long term associations with all clients.
 
@@ -245,6 +256,25 @@ A capable leader to carry the internal team and the external customers through c
         title:"Making Design Automation Affordable",
         images: [recognition4Img],
       },
+      {
+        id: "recognition5",
+        title: "10 Most Promising Engineering Design Service Providers 2020 — SiliconIndia",
+        images: [recognition5Img],
+        fillWidth: true, // taller page: fill card width, anchored to top
+      },
+      {
+        id: "recognition6",
+        title: "G4 Solutions & Applications: Carving PLM Dreams into Reality",
+        images: [recognition6Img],
+        fillWidth: true,
+        focus: "center 78%", // portrait page: frame the CEO photo (headline is in the card title)
+      },
+      {
+        id: "recognition7",
+        title: "Best Medical Implant Product Design & Development Organization — India",
+        images: [recognition7Img],
+        fillWidth: true, // taller page: fill card width, anchored to top
+      },
     ],
   },
 
@@ -259,7 +289,7 @@ A capable leader to carry the internal team and the external customers through c
         title:        "Best Medical Implant Product Design & Development Organization — India",
         organization: "GHP MedTech Awards",
         links: [
-          { label: "Award Booklet",             href: "https://www.ghp-news.com/issues/medtech-awards-2020/" },
+          { label: "Award Booklet",             href: "https://ghpnews.digital/issues/medtech-awards-2020/4/" },
           { label: "Winners List",              href: "https://www.ghp-news.com/winners-list/?award=11517-2020" },
           { label: "Press Release (March 2021)",href: "https://www.ghp-news.com/ghp-magazine-announces-the-winners-of-the-2020-medtech-awards/" },
         ],
@@ -270,7 +300,7 @@ A capable leader to carry the internal team and the external customers through c
         title:        "Unique Design Automation Approach",
         organization: "Siemens Solution Partner Recognition",
         links: [
-          { label: "Siemens Partner Blog Feature",          href: "https://blogs.sw.siemens.com/partners/siemens-partner-recognized-for-unique-design-automation-approach/" },
+          { label: "Siemens Partner Blog Feature (Case Study)",          href: "https://blogs.sw.siemens.com/partners/siemens-partner-recognized-for-unique-design-automation-approach/" },
           { label: "Siemens Official Twitter Announcement", href: "https://twitter.com/SiemensPartners/status/1354421380327075842?s=20" },
         ],
       },
@@ -280,7 +310,7 @@ A capable leader to carry the internal team and the external customers through c
         title:        "10 Most Promising Engineering Design Service Providers",
         organization: "Silicon India Magazine",
         links: [
-          { label: "Digital Magazine Issue", href: "https://www.siliconindia.com/digital-magazine/engineering-design-services-november-2020/#page=10" },
+          { label: "Digital Magazine Issue (Silicon India) (Page No - 10)", href: "https://www.siliconindia.com/digital-magazine/engineering-design-services-november-2020/#page=10" },
           { label: "Vendor Profile Feature", href: "https://enterprise-services.siliconindia.com/vendor/sree-varahhas-technologies-providing-customized-automation-solutions-across-all-aspects-of-design-manufacturing-cid-13827.html" },
         ],
       },
@@ -292,7 +322,7 @@ A capable leader to carry the internal team and the external customers through c
         title:        "10 Most Promising PLM Companies: Carving PLM Dreams into Reality",
         organization: "Silicon India",
         links: [
-          { label: "Magazine Issue",   href: "https://www.siliconindia.com/magazine/SI-Mar-special2-2015/" },
+          { label: "Magazine Issue (Page No - 32)",   href: "https://www.siliconindia.com/magazine/SI-Mar-special2-2015/#page=32" },
           { label: "Featured Article", href: "https://www.siliconindia.com/magazine-articles-in/G4-Solutions-&-ApplicationsCarving-PLM-Dreams-into-Reality-WMRT679800118.html" },
         ],
       },
@@ -318,6 +348,8 @@ A capable leader to carry the internal team and the external customers through c
     items: [
       { id: "rasuIndustriesId", name: "RASU INDUSTRIES PVT LTD", logo: rasuLogo, website: "" },
       { id: "fineforgeId", name: "FINE FORGE LTD", logo: fineforgeLogo, website: "" },
+      // No logo yet — Clients.tsx renders a typographic wordmark from the name
+      { id: "finexDiesId", name: "FINEX DIES PRIVATE LIMITED", logo: "", website: "" },
     ],
   },
 

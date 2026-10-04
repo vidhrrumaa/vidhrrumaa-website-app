@@ -4,7 +4,7 @@
  * Dark-background four-column card grid for Innovation Hub offerings.
  */
 import { motion } from "motion/react";
-import { BRAND_DARK, BRAND_GOLD, SITE_DATA, FONT } from "@/data/siteData";
+import { BRAND_DARK, BRAND_GOLD, SITE_DATA } from "@/data/siteData";
 import { Reveal, SectionHeader, stagger, fadeUp } from "@/components/Shared";
 
 export default function Innovation() {
@@ -29,8 +29,8 @@ export default function Innovation() {
               onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "rgba(196,164,50,0.18)")}
             >
               <div style={{ width: "1.5rem", height: 2, backgroundColor: BRAND_GOLD, borderRadius: 2, marginBottom: "0.875rem" }} />
-              <h3 style={{ fontSize: FONT.base, fontWeight: 700, color: "#fff", margin: "0 0 0.375rem" }}>{item.name}</h3>
-              <p  style={{ fontSize: FONT.sm, color: "#a3a3a3", margin: 0, lineHeight: 1.5 }}>{item.subtitle}</p>
+              <h3 className="card-title card-title--on-dark">{item.name}</h3>
+              <p className="card-subtitle card-subtitle--on-dark">{item.subtitle}</p>
             </motion.div>
           ))}
         </motion.div>

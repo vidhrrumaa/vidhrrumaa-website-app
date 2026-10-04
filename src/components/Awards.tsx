@@ -6,6 +6,7 @@
  * large image + readable title. ESC or backdrop click closes it.
  */
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { motion } from "motion/react";
 import { X, ZoomIn } from "lucide-react";
 import { SITE_DATA, BRAND_WARM, BRAND_GOLD, BRAND_DARK } from "../data/siteData";
@@ -119,7 +120,17 @@ function Lightbox({ item, onClose }: { item: LightboxItem; onClose: () => void }
 
 // ─── Award card ───────────────────────────────────────────────────────────────
 
-function AwardCard({ img, title }: { img: string; title: string }) {
+/**
+ * All thumbnails share one fixed frame size. Default: whole image shown
+ * (contain) on a blurred copy of itself. `fillWidth`: for taller magazine
+ * pages — image spans the full frame width, anchored to the top (the lower
+ * part is hidden in the card; the lightbox always shows the full image).
+ * `focus` overrides which part of a fillWidth image stays in view
+ * (CSS object-position, e.g. "center 85%"); default is the top.
+ */
+function AwardCard({ img, title, fillWidth = false, focus }: {
+  img: string; title: string; fillWidth?: boolean; focus?: string;
+}) {
   const [hovered, setHovered] = useState(false);
   const [open,    setOpen]    = useState(false);
 
@@ -134,10 +145,13 @@ function AwardCard({ img, title }: { img: string; title: string }) {
         style={{ cursor: "zoom-in" }}
       >
         <div className="award-card__bar" />
-        <div className="award-card__img-wrap" style={{ position: "relative" }}>
+        <div
+          className={`award-card__img-wrap${fillWidth ? " award-card__img-wrap--fill-width" : ""}`}
+          style={{ position: "relative", "--award-backdrop": `url("${img}")` } as CSSProperties}
+        >
           <img
             src={img} alt={title} loading="lazy"
-            style={{ transition: "transform 0.4s ease", transform: hovered ? "scale(1.08)" : "scale(1)" }}
+            style={{ objectPosition: focus, transition: "transform 0.4s ease", transform: hovered ? "scale(1.04)" : "scale(1)" }}
           />
           {/* Hover overlay */}
           <div style={{
@@ -243,7 +257,13 @@ export default function Awards() {
           className="awards__grid"
         >
           {d.items.map((award) => (
-            <AwardCard key={award.id} img={award.images[0]} title={award.title} />
+<AwardCard
+              key={award.id}
+              img={award.images[0]}
+              title={award.title}
+              fillWidth={"fillWidth" in award ? award.fillWidth : false}
+              focus={"focus" in award ? award.focus : undefined}
+            />
           ))}
         </motion.div>
 

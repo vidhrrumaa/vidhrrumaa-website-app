@@ -32,7 +32,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <p className="footer__copy">
-          © {year} Vidhrrumaa Business Innovations Private Limited. All rights reserved.
+          © {year} VIDHRRUMAA BUSSINESS INNOWATTIIONS PRIVATE LIMITED. All rights reserved.
         </p>
       </div>
     </motion.footer>

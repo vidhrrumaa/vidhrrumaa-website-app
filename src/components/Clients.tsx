@@ -6,13 +6,10 @@
  * All data comes from siteData.ts.
  */
 import { motion } from "motion/react";
-import { Building2 } from "lucide-react";
 import {
-  BRAND_DARK,
   BRAND_GOLD,
   BRAND_GOLD2,
   SITE_DATA,
-  FONT,
 } from "@/data/siteData";
 import {
   Reveal,
@@ -20,6 +17,24 @@ import {
   stagger,
   fadeUp,
 } from "@/components/Shared";
+
+// ─── Wordmark (fallback logo built from the client name) ─────────────────────
+// Simple text logo in the style of the existing image logos: a small dark
+// monogram tile plus the name (legal suffix dropped) in plain bold caps.
+
+const LEGAL_SUFFIX = /\s+(PRIVATE\s+LIMITED|PVT\.?\s*LTD\.?|LIMITED|LTD\.?)$/i;
+
+function Wordmark({ name }: { name: string }) {
+  const core     = name.replace(LEGAL_SUFFIX, "").trim();
+  const initials = core.split(/\s+/).map((w) => w[0]).join("").slice(0, 3);
+
+  return (
+    <div className="client-wordmark" aria-hidden="true">
+      <span className="client-wordmark__mark">{initials}</span>
+      <span className="client-wordmark__name">{core}</span>
+    </div>
+  );
+}
 
 export default function Clients() {
   const d = SITE_DATA.clients;
@@ -61,13 +76,7 @@ export default function Clients() {
                     className="client-card__logo-img"
                   />
                 ) : (
-                  <div className="client-card__logo-placeholder">
-                    <Building2
-                      size={28}
-                      color={BRAND_DARK}
-                      strokeWidth={1.5}
-                    />
-                  </div>
+                  <Wordmark name={client.name} />
                 )}
               </div>
 
